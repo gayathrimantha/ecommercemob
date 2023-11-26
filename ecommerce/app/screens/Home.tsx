@@ -50,7 +50,7 @@ const Home = () => {
             }}
           />
         </TouchableOpacity>
-        <Image source={{uri: product?.images[0]}} style={styles.image} />
+        <Image source={{uri: product?.thumbnail}} style={styles.image} />
 
         <View style={styles.buttonContainer}>
           <Text style={styles.price}>${product.price}</Text>
