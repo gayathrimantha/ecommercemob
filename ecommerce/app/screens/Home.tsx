@@ -83,15 +83,17 @@ const Home = () => {
         <View style={styles.containerOne}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Text style={styles.nameText}>Hey, Rahul</Text>
-            <Image
-              source={require('../assets/icons/Cart_Icon.png')}
-              style={{
-                width: rs(25),
-                height: rs(25),
-                marginTop: rs(35),
-                marginRight: rs(20),
-              }}
-            />
+            <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+              <Image
+                source={require('../assets/icons/Cart_Icon.png')}
+                style={{
+                  width: rs(25),
+                  height: rs(25),
+                  marginTop: rs(35),
+                  marginRight: rs(20),
+                }}
+              />
+            </TouchableOpacity>
           </View>
 
           <View

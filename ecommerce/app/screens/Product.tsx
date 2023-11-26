@@ -60,13 +60,15 @@ const Product = ({route}: any) => {
             }}
           />
         </TouchableOpacity>
-        <Image
-          source={require('../assets/icons/Cart.png')}
-          style={{
-            height: rs(25),
-            width: rs(25),
-          }}
-        />
+        <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+          <Image
+            source={require('../assets/icons/Cart.png')}
+            style={{
+              height: rs(25),
+              width: rs(25),
+            }}
+          />
+        </TouchableOpacity>
       </View>
       <View>
         <Text style={styles.titleName}>{item.title}</Text>
@@ -101,17 +103,87 @@ const Product = ({route}: any) => {
         style={{marginTop: rs(25)}}
       />
       {renderIndicator()}
-      <View style={{flexDirection: 'row'}}>
-        <Text style={styles.priceText}>${item.price}</Text>
-        <View
-          style={{
-            backgroundColor: theme.colors.bgBlue,
-            width: rs(80),
-            marginLeft: rs(10),
-            borderRadius: rs(10),
-          }}>
-          <Text></Text>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: rs(16),
+          backgroundColor: 'white', // Or any other background color
+          elevation: 1, // for Android
+          shadowColor: '#000', // for iOS
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          padding: rs(5),
+        }}>
+        <View style={{flexDirection: 'row'}}>
+          <Text style={styles.priceText}>${item.price}</Text>
+          <View
+            style={{
+              backgroundColor: theme.colors.bgBlue,
+              width: rs(65),
+              marginLeft: rs(10),
+              borderRadius: rs(10),
+              height: rs(22),
+            }}>
+            <Text
+              style={{
+                color: theme.colors.greyWhite,
+                alignContent: 'center',
+                justifyContent: 'center',
+                padding: rs(3),
+                fontSize: rs(10),
+                marginLeft: rs(2),
+              }}>
+              {item.discountPercentage}% OFF
+            </Text>
+          </View>
         </View>
+        <View>
+          <Text
+            style={{
+              color: theme.colors.bgBlue,
+              marginRight: rs(20),
+              fontSize: rs(12),
+            }}>
+            Only {item.stock} left
+          </Text>
+        </View>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: rs(5),
+        }}>
+        <TouchableOpacity style={styles.addTocartContainer}>
+          <Text style={styles.addToCartText}>Add to cart</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.buyNowContainer}>
+          <Text style={styles.buyNowText}>Buy Now</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={{marginTop: rs(10)}}>
+        <Text
+          style={{
+            color: theme.colors.blackGrey,
+            marginLeft: rs(10),
+            fontSize: rs(13),
+          }}>
+          Details
+        </Text>
+        <Text
+          style={{
+            color: theme.colors.black45,
+            marginLeft: rs(10),
+            fontSize: rs(12),
+            marginTop: rs(5),
+          }}>
+          {item.description}
+        </Text>
       </View>
     </ScrollView>
   );
@@ -162,5 +234,40 @@ const styles = StyleSheet.create({
     color: theme.colors.bgBlue,
     marginLeft: rs(20),
     fontSize: rs(14),
+  },
+  addTocartContainer: {
+    borderColor: theme.colors.bgBlue,
+    borderWidth: 1,
+    height: rs(35),
+    width: rs(110),
+    backgroundColor: theme.colors.greyWhite,
+    borderRadius: rs(10),
+    marginLeft: rs(15),
+    marginTop: rs(15),
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
+  addToCartText: {
+    color: theme.colors.bgBlue,
+    fontSize: rs(10),
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
+  buyNowContainer: {
+    borderWidth: 1,
+    height: rs(35),
+    width: rs(110),
+    backgroundColor: theme.colors.bgBlue,
+    borderRadius: rs(10),
+    marginRight: rs(15),
+    marginTop: rs(15),
+    textAlign: 'center',
+    justifyContent: 'center',
+  },
+  buyNowText: {
+    color: theme.colors.greyWhite,
+    fontSize: rs(10),
+    textAlign: 'center',
+    justifyContent: 'center',
   },
 });
