@@ -3,7 +3,7 @@ import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import {rs} from '../themes/ResponsiveScreen';
 import {theme} from '../themes/light/properties/colors';
 import {connect} from 'react-redux';
-import {adjustQuantity} from '../redux/actions';
+import {adjustQuantity, removeFromCart} from '../redux/actions';
 
 const CartItem = ({
   id,
@@ -12,16 +12,21 @@ const CartItem = ({
   quantity,
   adjustQuantity,
   thumbnail,
+  removeFromCart,
 }: any) => {
   //   const [quantityOne, setQuantityOne] = useState(0);
-
+  console.log(quantity, 'quanity');
   const increaseQuantity = () => {
+    console.log('Increasing Quantity:', id, quantity + 1);
     adjustQuantity(id, quantity + 1);
   };
 
   const decreaseQuantity = () => {
-    if (quantity > 0) {
+    if (quantity > 1) {
+      console.log('Decreasing Quantity:', id, quantity - 1);
       adjustQuantity(id, quantity - 1);
+    } else {
+      removeFromCart(id);
     }
   };
 
@@ -101,7 +106,13 @@ const styles = StyleSheet.create({
   quantity: {
     marginHorizontal: rs(10),
     fontSize: rs(14),
+    color: theme.colors.black45,
   },
 });
 
-export default CartItem;
+const mapDispatchToProps = {
+  adjustQuantity,
+  removeFromCart,
+};
+
+export default connect(null, mapDispatchToProps)(CartItem);

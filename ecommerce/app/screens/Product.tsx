@@ -17,15 +17,21 @@ import {
 } from '@react-navigation/native';
 import {HomeStackParamList} from './HomeStack';
 import {FlatList} from 'react-native-gesture-handler';
+import {addToCart} from '../redux/actions';
+import {connect} from 'react-redux';
 
 type ProductRouteProp = RouteProp<HomeStackParamList, 'Product'>;
 
 type Props = {
   route: ProductRouteProp;
+  addToCart: typeof addToCart;
 };
 const windowWidth = Dimensions.get('window').width;
 
-const Product = ({route}: any) => {
+const Product = ({route, addToCart, id, quantity}: any) => {
+  const handleAddToCart = () => {
+    addToCart({...item, quantity: 1});
+  };
   type HomeNavigationProp = NavigationProp<HomeStackParamList, 'Product'>;
   const navigation = useNavigation<HomeNavigationProp>();
   const item = route.params.item;
@@ -160,7 +166,9 @@ const Product = ({route}: any) => {
           justifyContent: 'space-between',
           marginTop: rs(5),
         }}>
-        <TouchableOpacity style={styles.addTocartContainer}>
+        <TouchableOpacity
+          style={styles.addTocartContainer}
+          onPress={handleAddToCart}>
           <Text style={styles.addToCartText}>Add to cart</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.buyNowContainer}>
@@ -190,7 +198,10 @@ const Product = ({route}: any) => {
   );
 };
 
-export default Product;
+const mapDispatchToProps = {
+  addToCart,
+};
+export default connect(null, mapDispatchToProps)(Product);
 
 const styles = StyleSheet.create({
   mainContainer: {

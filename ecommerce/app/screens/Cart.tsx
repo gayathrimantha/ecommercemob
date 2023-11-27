@@ -83,6 +83,8 @@ const Cart = ({cartItems}: CartRouteProp) => {
               productName={item.title}
               productCost={item.price}
               thumbnail={item.thumbnail}
+              quantity={item.quantity}
+              id={item.id}
             />
           )}
           keyExtractor={(item: any) => item.id}

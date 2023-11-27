@@ -261,10 +261,6 @@ const styles = StyleSheet.create({
     margin: rs(5),
     width: '47%',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 2,
   },
   image: {
     width: rs(100),
