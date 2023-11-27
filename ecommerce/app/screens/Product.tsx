@@ -19,6 +19,7 @@ import {HomeStackParamList} from './HomeStack';
 import {FlatList} from 'react-native-gesture-handler';
 import {addToCart} from '../redux/actions';
 import {connect} from 'react-redux';
+import {Rating} from 'react-native-ratings';
 
 type ProductRouteProp = RouteProp<HomeStackParamList, 'Product'>;
 
@@ -79,14 +80,15 @@ const Product = ({route, addToCart, id, quantity}: any) => {
       <View>
         <Text style={styles.titleName}>{item.title}</Text>
       </View>
-      <View>
-        <Image
-          source={require('../assets/icons/Review_Icon.png')}
-          style={{
-            height: rs(15),
-            width: rs(180),
-            marginLeft: rs(20),
-          }}
+      <View style={{alignSelf: 'flex-start', marginLeft: rs(20)}}>
+        <Rating
+          type="star"
+          ratingCount={5}
+          imageSize={15}
+          readonly
+          startingValue={item.rating}
+          // onFinishRating={ratingCompleted}
+          // Additional styling or properties can be added here
         />
       </View>
 

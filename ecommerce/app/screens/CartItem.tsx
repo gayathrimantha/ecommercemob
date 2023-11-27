@@ -14,7 +14,6 @@ const CartItem = ({
   thumbnail,
   removeFromCart,
 }: any) => {
-  //   const [quantityOne, setQuantityOne] = useState(0);
   console.log(quantity, 'quanity');
   const increaseQuantity = () => {
     console.log('Increasing Quantity:', id, quantity + 1);
