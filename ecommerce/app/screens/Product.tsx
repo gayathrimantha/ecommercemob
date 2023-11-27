@@ -96,10 +96,11 @@ const Product = ({route}: any) => {
         onScroll={e => {
           const contentOffset = e.nativeEvent.contentOffset.x;
           const viewSize = e.nativeEvent.layoutMeasurement.width;
-          const activeIndex = Math.floor(contentOffset / viewSize);
-          setActiveIndex(activeIndex);
+          const activeIndexOne = Math.floor(contentOffset / viewSize);
+          console.log(activeIndexOne, 'activeIndexOne');
+          setActiveIndex(activeIndexOne);
         }}
-        scrollEventThrottle={16}
+        scrollEventThrottle={1}
         style={{marginTop: rs(25)}}
       />
       {renderIndicator()}

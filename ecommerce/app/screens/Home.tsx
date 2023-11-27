@@ -18,12 +18,18 @@ import {toGet} from '../config/api/ApiServices';
 import {useNavigation} from '@react-navigation/native';
 import {HomeStackParamList} from './HomeStack';
 import {StackNavigationProp} from '@react-navigation/stack';
+import {addToCart} from '../redux/actions';
+import {connect} from 'react-redux';
 
 type HomeProps = {
   navigation: StackNavigationProp<HomeStackParamList, 'Home'>;
+  addToCart: typeof addToCart; // Define the type for addToCart
 };
 
-const Home = () => {
+const Home = ({addToCart}: HomeProps) => {
+  const handleAddToCart = (product: any) => {
+    addToCart({...product, quantity: 1}); // Assuming each product has an id
+  };
   const navigation = useNavigation<HomeProps['navigation']>();
   const [isLoading, setIsLoading] = useState(false);
   const [listData, setListData] = useState([]);
@@ -54,7 +60,9 @@ const Home = () => {
 
         <View style={styles.buttonContainer}>
           <Text style={styles.price}>${product.price}</Text>
-          <TouchableOpacity style={styles.button}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => handleAddToCart(product)}>
             <Image source={require('../assets/icons/plus.png')} />
           </TouchableOpacity>
         </View>
@@ -73,6 +81,10 @@ const Home = () => {
   useEffect(() => {
     getListItems();
   }, []);
+
+  const mapDispatchToProps = {
+    addToCart,
+  };
 
   return (
     <KeyboardAvoidingView
@@ -213,7 +225,11 @@ const Home = () => {
   );
 };
 
-export default Home;
+const mapDispatchToProps = {
+  addToCart,
+};
+
+export default connect(null, mapDispatchToProps)(Home);
 
 const styles = StyleSheet.create({
   mainContainer: {

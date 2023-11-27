@@ -14,5 +14,6 @@ export const theme = {
     yellow: '#F9B023',
     black20: '#C5CDD2',
     black45: '#A9B4BC',
+    black10: '#E7ECF0',
   },
 };
