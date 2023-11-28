@@ -18,6 +18,7 @@ import {theme} from '../themes/light/properties/colors';
 import {FlatList} from 'react-native-gesture-handler';
 import CartItem from './CartItem';
 import {connect} from 'react-redux';
+import {typography} from '../themes/light/properties/typography';
 
 type CartRouteProp = {
   route: RouteProp<HomeStackParamList, 'Cart'>;
@@ -133,6 +134,7 @@ const styles = StyleSheet.create({
     marginLeft: rs(20),
     marginTop: rs(4),
     fontSize: rs(14),
+    fontFamily: typography.Main,
   },
   bottomContainer: {
     marginTop: rs(0),
@@ -146,12 +148,14 @@ const styles = StyleSheet.create({
     margin: rs(10),
     fontSize: rs(14),
     paddingHorizontal: rs(10),
+    fontFamily: typography.Main,
   },
   totalBoxStyleBlack: {
     color: theme.colors.blackGrey,
     margin: rs(10),
     fontSize: rs(14),
     paddingHorizontal: rs(10),
+    fontFamily: typography.Main,
   },
   proceedtoPay: {
     backgroundColor: theme.colors.bgBlue,
@@ -167,6 +171,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     fontSize: rs(13),
+    fontFamily: typography.Main,
   },
   emptyCartContainer: {
     flex: 1,
@@ -177,5 +182,6 @@ const styles = StyleSheet.create({
   emptyCartText: {
     fontSize: rs(15),
     color: theme.colors.black45,
+    fontFamily: typography.Main,
   },
 });

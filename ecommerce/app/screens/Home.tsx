@@ -21,12 +21,16 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {addToCart, addToFav, removeFromFav} from '../redux/actions';
 import {connect} from 'react-redux';
 import Toast from 'react-native-simple-toast';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {typography} from '../themes/light/properties/typography';
+import Loader from './Loader';
 
 interface HomeProps {
   addToCart: typeof addToCart;
   favItems: any[]; // Ideally, replace any with a more specific type
   addToFav: typeof addToFav;
   removeFromFav: typeof removeFromFav;
+  cartItems: any[];
 }
 
 // Define ProductCardProps if needed
@@ -40,6 +44,7 @@ const Home: React.FC<HomeProps> = ({
   favItems,
   addToFav,
   removeFromFav,
+  cartItems,
 }) => {
   const [searchText, setSearchText] = useState('');
 
@@ -68,9 +73,7 @@ const Home: React.FC<HomeProps> = ({
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() =>
-          navigation.navigate('Product', {item: product, isFav: isFav})
-        }>
+        onPress={() => navigation.navigate('Product', {item: product})}>
         <TouchableOpacity onPress={handleFavIconClick} style={styles.favIcon}>
           <Image
             source={
@@ -113,7 +116,14 @@ const Home: React.FC<HomeProps> = ({
   const filteredListData = listData.filter(item =>
     item.title.toLowerCase().includes(searchText.toLowerCase()),
   );
-
+  if (isLoading) {
+    return (
+      <Loader
+        lottie={true}
+        lottieuri={require('../assets/lottie/loading.json')}
+      />
+    );
+  }
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -137,17 +147,24 @@ const Home: React.FC<HomeProps> = ({
                   }}
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
-                <Image
-                  source={require('../assets/icons/Cart_Icon.png')}
-                  style={{
-                    width: rs(25),
-                    height: rs(25),
-                    marginTop: rs(35),
-                    marginRight: rs(20),
-                  }}
-                />
-              </TouchableOpacity>
+              <View
+                style={{
+                  marginTop: rs(37),
+                  marginRight: rs(20),
+                }}>
+                <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                  <MaterialIcons
+                    name="shopping-cart"
+                    size={rs(25)}
+                    color="white"
+                  />
+                </TouchableOpacity>
+                {
+                  <View style={styles.cartCountContainer}>
+                    <Text style={styles.cartCountText}>{cartItems.length}</Text>
+                  </View>
+                }
+              </View>
             </View>
           </View>
 
@@ -181,6 +198,7 @@ const Home: React.FC<HomeProps> = ({
               placeholderTextColor="#b0b0b0"
               onChangeText={text => setSearchText(text)}
               value={searchText}
+              style={{color: theme.colors.background}}
             />
           </View>
 
@@ -190,7 +208,7 @@ const Home: React.FC<HomeProps> = ({
               justifyContent: 'space-between',
               marginHorizontal: rs(10),
             }}>
-            <View style={styles.deliveryContainer}>
+            <TouchableOpacity style={styles.deliveryContainer}>
               <Text style={styles.deliveryContainerText}>DELIVERY TO</Text>
               <Image
                 source={require('../assets/icons/Frame_8676.png')}
@@ -201,8 +219,8 @@ const Home: React.FC<HomeProps> = ({
                   marginRight: rs(10),
                 }}
               />
-            </View>
-            <View style={styles.deliveryContainer}>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.deliveryContainer}>
               <Text style={styles.deliveryContainerText}>Within</Text>
               <Image
                 source={require('../assets/icons/Frame_8677.png')}
@@ -213,7 +231,7 @@ const Home: React.FC<HomeProps> = ({
                   marginRight: rs(10),
                 }}
               />
-            </View>
+            </TouchableOpacity>
           </View>
         </View>
         <View>
@@ -235,7 +253,7 @@ const Home: React.FC<HomeProps> = ({
               lineHeight: rs(38),
               marginTop: rs(10),
               marginLeft: rs(10),
-              fontWeight: '400',
+              fontFamily: typography.Sub,
             }}>
             Recommended
           </Text>
@@ -266,7 +284,8 @@ const Home: React.FC<HomeProps> = ({
 
 const mapStateToProps = (state: any) => ({
   // Replace any with the specific state type
-  favItems: state.fav, // Ensure this matches your Redux state structure
+  favItems: state.fav,
+  cartItems: state.cart, // Ensure this matches your Redux state structure
 });
 
 const mapDispatchToProps = {
@@ -291,6 +310,7 @@ const styles = StyleSheet.create({
     color: theme.colors.greyWhite,
     marginTop: rs(35),
     marginLeft: rs(20),
+    fontFamily: typography.Main,
   },
   deliveryContainer: {
     marginTop: rs(20),
@@ -299,6 +319,8 @@ const styles = StyleSheet.create({
   },
   deliveryContainerText: {
     fontSize: rs(11),
+    color: theme.colors.background,
+    fontFamily: typography.Main,
   },
   card: {
     backgroundColor: theme.colors.lightGrey,
@@ -317,10 +339,12 @@ const styles = StyleSheet.create({
   title: {
     marginTop: rs(5),
     color: theme.colors.blackGrey,
+    fontFamily: typography.Sub,
   },
   price: {
     color: theme.colors.lightBlack,
     marginTop: rs(10),
+    fontFamily: typography.Sub,
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -339,5 +363,21 @@ const styles = StyleSheet.create({
     top: rs(10),
     left: rs(10),
     zIndex: 1, // ensures the icon is above other elements
+  },
+  cartCountContainer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: theme.colors.yellow,
+    borderRadius: rs(7.5), // Adjust for a circular shape
+    width: rs(15),
+    height: rs(15),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cartCountText: {
+    color: 'white',
+    fontSize: rs(10),
+    fontWeight: 'bold',
   },
 });

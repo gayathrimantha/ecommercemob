@@ -20,6 +20,9 @@ import {FlatList} from 'react-native-gesture-handler';
 import {addToCart, addToFav, removeFromFav} from '../redux/actions';
 import {connect} from 'react-redux';
 import {Rating} from 'react-native-ratings';
+import {typography} from '../themes/light/properties/typography';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Toast from 'react-native-simple-toast';
 
 type ProductRouteProp = RouteProp<HomeStackParamList, 'Product'>;
 
@@ -28,21 +31,16 @@ type Props = {
   addToCart: typeof addToCart;
   addToFav: typeof addToFav;
   removeFromFav: typeof removeFromFav;
+  cartItems: any[];
 };
 const windowWidth = Dimensions.get('window').width;
 
-const Product = ({
-  route,
-  addToCart,
-  id,
-  quantity,
-  addToFav,
-  removeFromFav,
-}: any) => {
+const Product = ({route, addToCart, id, quantity, cartItems}: any) => {
   const [isFav, setIsFav] = useState(false);
 
   const handleAddToCart = () => {
     addToCart({...item, quantity: 1});
+    Toast.show(`${item.title} added to cart!`, Toast.LONG);
   };
   type HomeNavigationProp = NavigationProp<HomeStackParamList, 'Product'>;
   const navigation = useNavigation<HomeNavigationProp>();
@@ -87,25 +85,25 @@ const Product = ({
             }}
           />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
-          <Image
-            source={require('../assets/icons/Cart.png')}
-            style={{
-              height: rs(25),
-              width: rs(25),
-            }}
-          />
-        </TouchableOpacity>
+        <View
+          style={{
+            marginTop: rs(0),
+            marginRight: rs(20),
+          }}>
+          <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+            <MaterialIcons name="shopping-cart" size={rs(25)} color="black" />
+          </TouchableOpacity>
+          {
+            <View style={styles.cartCountContainer}>
+              <Text style={styles.cartCountText}>{cartItems.length}</Text>
+            </View>
+          }
+        </View>
       </View>
       <View>
         <Text style={styles.titleName}>{item.title}</Text>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          marginLeft: rs(20),
-          justifyContent: 'space-between',
-        }}>
+      <View style={{alignSelf: 'flex-start', marginLeft: rs(20)}}>
         <Rating
           type="star"
           ratingCount={5}
@@ -115,19 +113,6 @@ const Product = ({
           // onFinishRating={ratingCompleted}
           // Additional styling or properties can be added here
         />
-        <TouchableOpacity onPress={handleFavIconClick}>
-          <Image
-            source={
-              isFav
-                ? require('../assets/icons/Vector_Red.png')
-                : require('../assets/icons/Vector.png')
-            }
-            style={{
-              height: rs(12),
-              width: rs(13),
-            }}
-          />
-        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -184,6 +169,7 @@ const Product = ({
                 padding: rs(3),
                 fontSize: rs(10),
                 marginLeft: rs(2),
+                fontFamily: typography.Main,
               }}>
               {item.discountPercentage}% OFF
             </Text>
@@ -195,6 +181,7 @@ const Product = ({
               color: theme.colors.bgBlue,
               marginRight: rs(20),
               fontSize: rs(12),
+              fontFamily: typography.Main,
             }}>
             Only {item.stock} left
           </Text>
@@ -221,6 +208,7 @@ const Product = ({
             color: theme.colors.blackGrey,
             marginLeft: rs(10),
             fontSize: rs(13),
+            fontFamily: typography.Semi,
           }}>
           Details
         </Text>
@@ -230,6 +218,7 @@ const Product = ({
             marginLeft: rs(10),
             fontSize: rs(12),
             marginTop: rs(5),
+            fontFamily: typography.Main,
           }}>
           {item.description}
         </Text>
@@ -240,10 +229,11 @@ const Product = ({
 
 const mapDispatchToProps = {
   addToCart,
-  removeFromFav,
-  addToFav,
 };
-export default connect(null, mapDispatchToProps)(Product);
+const mapStateToProps = (state: any) => ({
+  cartItems: state.cart,
+});
+export default connect(mapStateToProps, mapDispatchToProps)(Product);
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -260,6 +250,7 @@ const styles = StyleSheet.create({
     fontSize: rs(50),
     color: theme.colors.lightBlack,
     marginLeft: rs(20),
+    fontFamily: typography.Sub,
   },
   image: {
     width: windowWidth,
@@ -288,6 +279,7 @@ const styles = StyleSheet.create({
     color: theme.colors.bgBlue,
     marginLeft: rs(20),
     fontSize: rs(14),
+    fontFamily: typography.Sub,
   },
   addTocartContainer: {
     borderColor: theme.colors.bgBlue,
@@ -323,5 +315,22 @@ const styles = StyleSheet.create({
     fontSize: rs(10),
     textAlign: 'center',
     justifyContent: 'center',
+    fontFamily: typography.Main,
+  },
+  cartCountContainer: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    backgroundColor: theme.colors.yellow,
+    borderRadius: rs(7.5), // Adjust for a circular shape
+    width: rs(15),
+    height: rs(15),
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cartCountText: {
+    color: 'white',
+    fontSize: rs(10),
+    fontWeight: 'bold',
   },
 });

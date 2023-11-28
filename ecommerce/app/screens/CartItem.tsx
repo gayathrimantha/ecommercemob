@@ -11,6 +11,7 @@ import {rs} from '../themes/ResponsiveScreen';
 import {theme} from '../themes/light/properties/colors';
 import {connect} from 'react-redux';
 import {adjustQuantity, removeFromCart} from '../redux/actions';
+import {typography} from '../themes/light/properties/typography';
 
 const CartItem = ({
   id,
@@ -108,6 +109,7 @@ const styles = StyleSheet.create({
 
     color: theme.colors.blackGrey,
     maxWidth: rs(150),
+    fontFamily: typography.Main,
   },
   productCost: {
     fontSize: rs(12),
@@ -121,6 +123,7 @@ const styles = StyleSheet.create({
     marginHorizontal: rs(10),
     fontSize: rs(14),
     color: theme.colors.black45,
+    fontFamily: typography.Main,
   },
 });
 

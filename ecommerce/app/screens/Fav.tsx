@@ -18,6 +18,7 @@ import {theme} from '../themes/light/properties/colors';
 import {FlatList} from 'react-native-gesture-handler';
 import FavItem from './FavItem';
 import {connect} from 'react-redux';
+import {typography} from '../themes/light/properties/typography';
 
 type FavRouteProp = {
   route: RouteProp<HomeStackParamList, 'Fav'>;
@@ -102,6 +103,7 @@ const styles = StyleSheet.create({
     marginLeft: rs(20),
     marginTop: rs(4),
     fontSize: rs(14),
+    fontFamily: typography.Main,
   },
   bottomContainer: {
     marginTop: rs(0),
@@ -115,6 +117,7 @@ const styles = StyleSheet.create({
     margin: rs(10),
     fontSize: rs(14),
     paddingHorizontal: rs(10),
+    fontFamily: typography.Main,
   },
   totalBoxStyleBlack: {
     color: theme.colors.blackGrey,
@@ -131,12 +134,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: rs(10),
   },
-  proceedtoPayText: {
-    color: theme.colors.background,
-    textAlign: 'center',
-    justifyContent: 'center',
-    fontSize: rs(13),
-  },
   emptyCartContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -146,5 +143,6 @@ const styles = StyleSheet.create({
   emptyCartText: {
     fontSize: rs(15),
     color: theme.colors.black45,
+    fontFamily: typography.Main,
   },
 });
