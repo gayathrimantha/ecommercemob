@@ -32,34 +32,14 @@ const Cart = ({cartItems}: CartRouteProp) => {
   console.log(cartItems, 'Cart Items');
   type HomeNavigationProp = NavigationProp<HomeStackParamList, 'Cart'>;
   const navigation = useNavigation<HomeNavigationProp>();
-  const products = [
-    {
-      id: 1,
-      name: 'Apple',
-      cost: 0.99,
-    },
-    {
-      id: 2,
-      name: 'Banana',
-      cost: 0.5,
-    },
-    {
-      id: 3,
-      name: 'Orange',
-      cost: 0.75,
-    },
-    {
-      id: 4,
-      name: 'Grapes',
-      cost: 2.99,
-    },
-    {
-      id: 5,
-      name: 'Bread',
-      cost: 1.99,
-    },
-  ];
+  const subtotal = cartItems.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0,
+  );
+  const deliveryCharge = 0; // Can be dynamic based on conditions
 
+  // Calculate total
+  const total = subtotal + deliveryCharge;
   return (
     <ScrollView style={styles.mainContainer}>
       <View style={styles.containerOne}>
@@ -74,49 +54,60 @@ const Cart = ({cartItems}: CartRouteProp) => {
         </TouchableOpacity>
         <Text style={styles.shoppingCartText}>Shopping Cart</Text>
       </View>
-      <View style={{marginTop: rs(20)}}>
-        <FlatList
-          horizontal={false}
-          data={cartItems}
-          renderItem={({item}) => (
-            <CartItem
-              productName={item.title}
-              productCost={item.price}
-              thumbnail={item.thumbnail}
-              quantity={item.quantity}
-              id={item.id}
+      {cartItems.length > 0 ? (
+        <>
+          <View style={{marginTop: rs(20)}}>
+            <FlatList
+              horizontal={false}
+              data={cartItems}
+              renderItem={({item}) => (
+                <CartItem
+                  productName={item.title}
+                  productCost={item.price}
+                  thumbnail={item.thumbnail}
+                  quantity={item.quantity}
+                  id={item.id}
+                />
+              )}
+              keyExtractor={(item: any) => item.id}
+              // refreshControl={
+              //   <RefreshControl
+              //     refreshing={refreshing}
+              //     onRefresh={handleRefresh}
+              //   />
+              // }
+              contentContainerStyle={{paddingBottom: rs(70)}}
+              numColumns={1}
             />
-          )}
-          keyExtractor={(item: any) => item.id}
-          // refreshControl={
-          //   <RefreshControl
-          //     refreshing={refreshing}
-          //     onRefresh={handleRefresh}
-          //   />
-          // }
-          contentContainerStyle={{paddingBottom: rs(70)}}
-          numColumns={1}
-        />
-      </View>
-      <View style={styles.bottomContainer}>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.totalBoxStyle}>Subtotal</Text>
-          <Text style={styles.totalBoxStyleBlack}>$1</Text>
-        </View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.totalBoxStyle}>Delivery</Text>
-          <Text style={styles.totalBoxStyleBlack}>$1</Text>
-        </View>
-        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-          <Text style={styles.totalBoxStyle}>Total</Text>
-          <Text style={styles.totalBoxStyleBlack}>$1</Text>
-        </View>
-        <TouchableOpacity>
-          <View style={styles.proceedtoPay}>
-            <Text style={styles.proceedtoPayText}>Proceed to Checkout</Text>
           </View>
-        </TouchableOpacity>
-      </View>
+          <View style={styles.bottomContainer}>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.totalBoxStyle}>Subtotal</Text>
+              <Text style={styles.totalBoxStyleBlack}>${subtotal}</Text>
+            </View>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.totalBoxStyle}>Delivery</Text>
+              <Text style={styles.totalBoxStyleBlack}>${deliveryCharge}</Text>
+            </View>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <Text style={styles.totalBoxStyle}>Total</Text>
+              <Text style={styles.totalBoxStyleBlack}>${total}</Text>
+            </View>
+            <TouchableOpacity>
+              <View style={styles.proceedtoPay}>
+                <Text style={styles.proceedtoPayText}>Proceed to Checkout</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+        </>
+      ) : (
+        <View style={styles.emptyCartContainer}>
+          <Text style={styles.emptyCartText}>Cart is empty</Text>
+        </View>
+      )}
     </ScrollView>
   );
 };
@@ -146,7 +137,7 @@ const styles = StyleSheet.create({
   bottomContainer: {
     marginTop: rs(0),
     marginHorizontal: rs(10),
-    height: rs(200),
+    height: rs(180),
     backgroundColor: theme.colors.black10,
     borderRadius: rs(10),
   },
@@ -165,7 +156,7 @@ const styles = StyleSheet.create({
   proceedtoPay: {
     backgroundColor: theme.colors.bgBlue,
     marginHorizontal: rs(25),
-    marginTop: rs(20),
+    marginTop: rs(10),
     height: rs(35),
     alignContent: 'center',
     justifyContent: 'center',
@@ -176,5 +167,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     justifyContent: 'center',
     fontSize: rs(13),
+  },
+  emptyCartContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: rs(20),
+  },
+  emptyCartText: {
+    fontSize: rs(15),
+    color: theme.colors.black45,
   },
 });

@@ -17,7 +17,7 @@ import {
 } from '@react-navigation/native';
 import {HomeStackParamList} from './HomeStack';
 import {FlatList} from 'react-native-gesture-handler';
-import {addToCart} from '../redux/actions';
+import {addToCart, addToFav, removeFromFav} from '../redux/actions';
 import {connect} from 'react-redux';
 import {Rating} from 'react-native-ratings';
 
@@ -26,10 +26,21 @@ type ProductRouteProp = RouteProp<HomeStackParamList, 'Product'>;
 type Props = {
   route: ProductRouteProp;
   addToCart: typeof addToCart;
+  addToFav: typeof addToFav;
+  removeFromFav: typeof removeFromFav;
 };
 const windowWidth = Dimensions.get('window').width;
 
-const Product = ({route, addToCart, id, quantity}: any) => {
+const Product = ({
+  route,
+  addToCart,
+  id,
+  quantity,
+  addToFav,
+  removeFromFav,
+}: any) => {
+  const [isFav, setIsFav] = useState(false);
+
   const handleAddToCart = () => {
     addToCart({...item, quantity: 1});
   };
@@ -38,6 +49,15 @@ const Product = ({route, addToCart, id, quantity}: any) => {
   const item = route.params.item;
   console.log(item, 'item');
   const [activeIndex, setActiveIndex] = useState(0); // State to track the active image index
+  const handleFavIconClick = () => {
+    if (isFav) {
+      removeFromFav(item.id);
+      setIsFav(false);
+    } else {
+      addToFav(item);
+      setIsFav(true);
+    }
+  };
 
   const renderIndicator = () => {
     return (
@@ -80,7 +100,12 @@ const Product = ({route, addToCart, id, quantity}: any) => {
       <View>
         <Text style={styles.titleName}>{item.title}</Text>
       </View>
-      <View style={{alignSelf: 'flex-start', marginLeft: rs(20)}}>
+      <View
+        style={{
+          flexDirection: 'row',
+          marginLeft: rs(20),
+          justifyContent: 'space-between',
+        }}>
         <Rating
           type="star"
           ratingCount={5}
@@ -90,6 +115,19 @@ const Product = ({route, addToCart, id, quantity}: any) => {
           // onFinishRating={ratingCompleted}
           // Additional styling or properties can be added here
         />
+        <TouchableOpacity onPress={handleFavIconClick}>
+          <Image
+            source={
+              isFav
+                ? require('../assets/icons/Vector_Red.png')
+                : require('../assets/icons/Vector.png')
+            }
+            style={{
+              height: rs(12),
+              width: rs(13),
+            }}
+          />
+        </TouchableOpacity>
       </View>
 
       <FlatList
@@ -202,6 +240,8 @@ const Product = ({route, addToCart, id, quantity}: any) => {
 
 const mapDispatchToProps = {
   addToCart,
+  removeFromFav,
+  addToFav,
 };
 export default connect(null, mapDispatchToProps)(Product);
 

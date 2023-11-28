@@ -1,18 +1,11 @@
-import React, {useState, useRef} from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Image,
-  Animated,
-} from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, TouchableOpacity, StyleSheet, Image} from 'react-native';
 import {rs} from '../themes/ResponsiveScreen';
 import {theme} from '../themes/light/properties/colors';
 import {connect} from 'react-redux';
-import {adjustQuantity, removeFromCart} from '../redux/actions';
+import {adjustQuantity, removeFromFav} from '../redux/actions';
 
-const CartItem = ({
+const FavItem = ({
   id,
   productName,
   productCost,
@@ -20,31 +13,16 @@ const CartItem = ({
   adjustQuantity,
   thumbnail,
   removeFromCart,
+  removeFromFav,
 }: any) => {
-  const fadeAnim = useRef(new Animated.Value(1)).current;
   console.log(quantity, 'quanity');
-  const increaseQuantity = () => {
-    console.log('Increasing Quantity:', id, quantity + 1);
-    adjustQuantity(id, quantity + 1);
-  };
 
   const decreaseQuantity = () => {
-    if (quantity > 1) {
-      console.log('Decreasing Quantity:', id, quantity - 1);
-      adjustQuantity(id, quantity - 1);
-    } else {
-      // removeFromCart(id);
-      // Fade out animation
-      Animated.timing(fadeAnim, {
-        toValue: 0, // Target opacity: 0
-        duration: 500, // Animation duration
-        useNativeDriver: true,
-      }).start(() => removeFromCart(id));
-    }
+    removeFromFav(id);
   };
 
   return (
-    <Animated.View style={[styles.container, {opacity: fadeAnim}]}>
+    <View style={styles.container}>
       <View style={{flexDirection: 'row'}}>
         <Image
           source={{uri: thumbnail}}
@@ -73,20 +51,8 @@ const CartItem = ({
             }}
           />
         </TouchableOpacity>
-        <Text style={styles.quantity}>{quantity}</Text>
-        <TouchableOpacity onPress={increaseQuantity}>
-          <Image
-            source={require('../assets/icons/Add.png')}
-            style={{
-              width: rs(30),
-              height: rs(30),
-              marginTop: rs(5),
-              marginRight: rs(10),
-            }}
-          />
-        </TouchableOpacity>
       </View>
-    </Animated.View>
+    </View>
   );
 };
 
@@ -107,7 +73,7 @@ const styles = StyleSheet.create({
     fontSize: rs(14),
 
     color: theme.colors.blackGrey,
-    maxWidth: rs(150),
+    maxWidth: rs(180),
   },
   productCost: {
     fontSize: rs(12),
@@ -125,8 +91,7 @@ const styles = StyleSheet.create({
 });
 
 const mapDispatchToProps = {
-  adjustQuantity,
-  removeFromCart,
+  removeFromFav,
 };
 
-export default connect(null, mapDispatchToProps)(CartItem);
+export default connect(null, mapDispatchToProps)(FavItem);

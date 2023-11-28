@@ -1,7 +1,14 @@
-import {ADD_TO_CART, REMOVE_FROM_CART, ADJUST_QUANTITY} from './actionTypes';
+import {
+  ADD_TO_CART,
+  REMOVE_FROM_CART,
+  ADJUST_QUANTITY,
+  ADD_TO_FAV,
+  REMOVE_FROM_FAV,
+} from './actionTypes';
 
 const initialState = {
   cart: [],
+  fav: [],
 };
 
 const cartReducer = (state = initialState, action) => {
@@ -22,7 +29,7 @@ const cartReducer = (state = initialState, action) => {
       } else {
         return {
           ...state,
-          cart: [...state.cart, {...action.payload, quantity: 1}], // Set initial quantity here
+          cart: [...state.cart, {...action.payload, quantity: 1}],
         };
       }
 
@@ -45,6 +52,17 @@ const cartReducer = (state = initialState, action) => {
           }
           return newCart;
         }, []),
+      };
+    case ADD_TO_FAV:
+      return {
+        ...state,
+        fav: [...state.fav, {...action.payload}],
+      };
+
+    case REMOVE_FROM_FAV:
+      return {
+        ...state,
+        fav: state.fav.filter(item => item.id !== action.payload.id),
       };
     default:
       return state;

@@ -18,37 +18,65 @@ import {toGet} from '../config/api/ApiServices';
 import {useNavigation} from '@react-navigation/native';
 import {HomeStackParamList} from './HomeStack';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {addToCart} from '../redux/actions';
+import {addToCart, addToFav, removeFromFav} from '../redux/actions';
 import {connect} from 'react-redux';
+import Toast from 'react-native-simple-toast';
 
-type HomeProps = {
-  navigation: StackNavigationProp<HomeStackParamList, 'Home'>;
-  addToCart: typeof addToCart; // Define the type for addToCart
-};
+interface HomeProps {
+  addToCart: typeof addToCart;
+  favItems: any[]; // Ideally, replace any with a more specific type
+  addToFav: typeof addToFav;
+  removeFromFav: typeof removeFromFav;
+}
 
-const Home = ({addToCart}: HomeProps) => {
+// Define ProductCardProps if needed
+interface ProductCardProps {
+  product: any; // Replace any with specific type
+  isFav: boolean;
+}
+
+const Home: React.FC<HomeProps> = ({
+  addToCart,
+  favItems,
+  addToFav,
+  removeFromFav,
+}) => {
+  const [searchText, setSearchText] = useState('');
+
   const handleAddToCart = (product: any) => {
-    addToCart({...product, quantity: 1}); // Assuming each product has an id
+    addToCart({...product, quantity: 1});
+    Toast.show(`${product.title} added to cart!`, Toast.LONG);
   };
-  const navigation = useNavigation<HomeProps['navigation']>();
+  const navigation =
+    useNavigation<StackNavigationProp<HomeStackParamList, 'Home'>>();
+  const [listData, setListData] = useState<any[]>([]); // Replace any with specific type
   const [isLoading, setIsLoading] = useState(false);
-  const [listData, setListData] = useState([]);
-  const [isFavIconClicked, setFavIconClicked] = useState(false);
 
-  const handleFavIconClick = () => {
-    setFavIconClicked(!isFavIconClicked);
-  };
-  const ProductCard = ({product}: any) => {
+  const isItemFavorited = (itemId: string) =>
+    favItems.some(item => item.id === itemId);
+
+  const ProductCard = ({product, isFav}: any) => {
+    const handleFavIconClick = () => {
+      if (isFav) {
+        removeFromFav(product.id);
+        Toast.show('Item removed!', Toast.LONG);
+      } else {
+        addToFav(product);
+        Toast.show('Item added!', Toast.LONG);
+      }
+    };
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => navigation.navigate('Product', {item: product})}>
+        onPress={() =>
+          navigation.navigate('Product', {item: product, isFav: isFav})
+        }>
         <TouchableOpacity onPress={handleFavIconClick} style={styles.favIcon}>
           <Image
             source={
-              isFavIconClicked
-                ? require('../assets/icons/Vector.png')
-                : require('../assets/icons/Vector_Red.png')
+              isFav
+                ? require('../assets/icons/Vector_Red.png')
+                : require('../assets/icons/Vector.png')
             }
             style={{
               height: rs(12),
@@ -82,9 +110,9 @@ const Home = ({addToCart}: HomeProps) => {
     getListItems();
   }, []);
 
-  const mapDispatchToProps = {
-    addToCart,
-  };
+  const filteredListData = listData.filter(item =>
+    item.title.toLowerCase().includes(searchText.toLowerCase()),
+  );
 
   return (
     <KeyboardAvoidingView
@@ -95,31 +123,46 @@ const Home = ({addToCart}: HomeProps) => {
         <View style={styles.containerOne}>
           <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
             <Text style={styles.nameText}>Hey, Rahul</Text>
-            <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
-              <Image
-                source={require('../assets/icons/Cart_Icon.png')}
-                style={{
-                  width: rs(25),
-                  height: rs(25),
-                  marginTop: rs(35),
-                  marginRight: rs(20),
-                }}
-              />
-            </TouchableOpacity>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+              <TouchableOpacity onPress={() => navigation.navigate('Fav')}>
+                <Image
+                  source={require('../assets/icons/Vector.png')}
+                  style={{
+                    width: rs(20),
+                    height: rs(18),
+                    marginTop: rs(40),
+                    marginRight: rs(20),
+                    tintColor: theme.colors.background,
+                  }}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                <Image
+                  source={require('../assets/icons/Cart_Icon.png')}
+                  style={{
+                    width: rs(25),
+                    height: rs(25),
+                    marginTop: rs(35),
+                    marginRight: rs(20),
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View
             style={{
               flexDirection: 'row',
 
-              width: rs(330),
+              width: rs(320),
               height: rs(45),
               backgroundColor: theme.colors.darkBlue,
               // fontSize: rs(12),
               paddingLeft: rs(10),
               borderRadius: rs(20),
-              marginLeft: rs(10),
-              marginRight: rs(5),
+
+              marginHorizontal: rs(10),
               marginTop: rs(30),
             }}>
             <Image
@@ -128,7 +171,7 @@ const Home = ({addToCart}: HomeProps) => {
                 width: rs(15),
                 height: rs(15),
                 marginTop: rs(15),
-                marginRight: rs(5),
+                marginRight: rs(10),
               }}
             />
             <TextInput
@@ -136,23 +179,17 @@ const Home = ({addToCart}: HomeProps) => {
               allowFontScaling={true}
               placeholder="Search Products or store"
               placeholderTextColor="#b0b0b0"
-              // onChangeText={setUserId}
-              // value={userId}
-              // style={{
-              //   width: rs(330),
-              //   height: rs(45),
-              //   backgroundColor: theme.colors.darkBlue,
-              //   fontSize: rs(12),
-              //   paddingLeft: rs(10),
-              //   borderRadius: rs(20),
-              //   marginLeft: rs(10),
-              //   marginRight: rs(5),
-              //   marginTop: rs(20),
-              // }}
+              onChangeText={text => setSearchText(text)}
+              value={searchText}
             />
           </View>
 
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginHorizontal: rs(10),
+            }}>
             <View style={styles.deliveryContainer}>
               <Text style={styles.deliveryContainerText}>DELIVERY TO</Text>
               <Image
@@ -197,7 +234,7 @@ const Home = ({addToCart}: HomeProps) => {
               fontSize: rs(30),
               lineHeight: rs(38),
               marginTop: rs(10),
-              marginLeft: rs(5),
+              marginLeft: rs(10),
               fontWeight: '400',
             }}>
             Recommended
@@ -206,8 +243,10 @@ const Home = ({addToCart}: HomeProps) => {
         <View>
           <FlatList
             horizontal={false}
-            data={listData}
-            renderItem={({item}) => <ProductCard product={item} />}
+            data={searchText ? filteredListData : listData}
+            renderItem={({item}) => (
+              <ProductCard product={item} isFav={isItemFavorited(item.id)} />
+            )}
             keyExtractor={(item: any) => item.id}
             // refreshControl={
             //   <RefreshControl
@@ -225,11 +264,18 @@ const Home = ({addToCart}: HomeProps) => {
   );
 };
 
+const mapStateToProps = (state: any) => ({
+  // Replace any with the specific state type
+  favItems: state.fav, // Ensure this matches your Redux state structure
+});
+
 const mapDispatchToProps = {
   addToCart,
+  addToFav,
+  removeFromFav,
 };
 
-export default connect(null, mapDispatchToProps)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -258,9 +304,10 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.lightGrey,
     borderRadius: rs(8),
     padding: rs(10),
-    margin: rs(5),
-    width: '47%',
+    marginLeft: rs(10),
+    width: '46%',
     alignItems: 'center',
+    marginTop: rs(10),
   },
   image: {
     width: rs(100),
